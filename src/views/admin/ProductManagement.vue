@@ -45,11 +45,11 @@ import ProductForm from "@/components/admin/product/ProductForm.vue";
 import ProductList from "@/components/admin/product/ProductList.vue";
 import { computed, onMounted, ref } from "vue";
 import { useCategories } from "@/store/admin/CategoryStore";
-import { useProducts } from "@/store/admin/ProductStore";
+import { useProductStore } from "@/store/productStore";
 
 // Stores
 const categoryStore = useCategories();
-const productStore = useProducts();
+const productStore = useProductStore();
 
 // State
 const searchQuery = ref("");

@@ -37,7 +37,7 @@
         </div>
         <div class="mb-2">
           <label for="productDescription" class="form-label">Mô Tả</label>
-          <textarea class="form-control" id="productDescription"></textarea>
+          <textarea class="form-control" id="productDescription" v-model="product.description"></textarea>
         </div>
       </div>
     </div>
@@ -75,6 +75,10 @@ const selectedCategoryName = computed(() => {
 const emits = defineEmits(['add', 'update', 'delete', 'uploadImage', 'reset'])
 
 function add() {
+  if (!props.product.name || !props.product.price || !props.product.categoryId) {
+    alert("Vui lòng điền đầy đủ thông tin!");
+    return;
+  }
   emits('add', props.product);
 }
 

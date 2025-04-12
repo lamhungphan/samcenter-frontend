@@ -57,7 +57,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useUsers } from "@/store/admin/UserStore";
 import { toast } from "vue3-toastify";
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import HeaderComponent from "@/components/Header.vue";
 
 const router = useRouter();
 const usersStore = useUsers();

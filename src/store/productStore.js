@@ -8,6 +8,8 @@ const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME;
 export const useProductStore = defineStore('product', () => {
   const products = ref([]);
   const productDetail = ref(null);
+  const pageNumber = ref(0);
+  const totalPages = ref(0);
 
   const formatProduct = (product) => ({
     ...product,
@@ -17,15 +19,20 @@ export const useProductStore = defineStore('product', () => {
     publishDate: product.publishDate || "Chưa cập nhật",
   });
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = 0) => {
     try {
-      const response = await axiosInstance.get(`/products`);
+      const response = await axiosInstance.get(`/products`, {
+        params: { page }
+      });
       const productList = response.data?.data?.content || [];
       products.value = productList.map(formatProduct);
+      pageNumber.value = response.data?.data?.number || 0;
+      totalPages.value = response.data?.data?.totalPages || 1;
     } catch (error) {
       console.error('Lỗi khi tải danh sách sản phẩm:', error.response?.data || error.message);
     }
   };
+
 
   const fetchProductById = async (id) => {
     try {
@@ -49,7 +56,7 @@ export const useProductStore = defineStore('product', () => {
     } catch (error) {
       console.error('Lỗi khi tải sản phẩm theo danh mục:', error.response?.data || error.message);
     }
-  };   
+  };
 
   const searchProducts = async (keyword) => {
     try {
@@ -63,12 +70,61 @@ export const useProductStore = defineStore('product', () => {
     }
   };
 
+  const create = async (product) => {
+    try {
+      const response = await axiosInstance.post(`/products`, product);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi thêm sản phẩm:', error.response?.data || error.message);
+      return null;
+    }
+  };
+
+  const update = async (productId, product) => {
+    try {
+      const response = await axiosInstance.put(`/products/${productId}`, product);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi cập nhật sản phẩm:', error.response?.data || error.message);
+      return null;
+    }
+  };
+
+  const remove = async (productId) => {
+    try {
+      const response = await axiosInstance.delete(`/products/${productId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi xóa sản phẩm:', error.response?.data || error.message);
+      return null;
+    }
+  };
+
+  const uploadImage = async (productId, file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axiosInstance.post(`/products/${productId}/upload`, formData);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi upload ảnh sản phẩm:', error.response?.data || error.message);
+      return null;
+    }
+  };
+
   return {
     products,
     productDetail,
+    pageNumber,
+    totalPages,
     fetchProducts,
     fetchProductById,
     fetchProductsByCategory,
     searchProducts,
+    create,
+    update,
+    delete: remove,
+    uploadImage,
   };
+
 });

@@ -21,7 +21,7 @@ export const useOrders = defineStore("order", {
         });
 
         if (response.data && response.data.data) {
-          this.orders = response.data.data.content;  // Assuming response contains 'content'
+          this.orders = response.data.data.content;
           this.totalPages = response.data.data.totalPages;
           this.pageNumber = page;
           return { success: true };

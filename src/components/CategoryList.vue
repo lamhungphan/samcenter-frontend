@@ -7,7 +7,9 @@
           :key="index" 
           class="col-md-3 col-sm-6 mb-4"
         >
-          <div class="card shadow-sm text-center category-card" @click="goToCategory(category.id)"          >
+          <div class="card shadow-sm text-center category-card" 
+          :class="{ 'border-primary': category.id === Number(route.query.categoryId) }"
+          @click="findProductByCategory(category.id)"          >
 
             <div class="card-body">
               <h5 class="card-title">{{ category.name }}</h5>
@@ -22,15 +24,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import axiosInstance from '@/axios/axios';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const router = useRouter();
 const categories = ref([]);
 
-
 const fetchCategories = async () => {
   try {
-    const response = await axios.get("http://localhost:8080/categories", {
+    const response = await axiosInstance.get("/categories", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -44,10 +47,9 @@ const fetchCategories = async () => {
 
 onMounted(fetchCategories);
 
-const goToCategory = (categoryId) => {
+const findProductByCategory = (categoryId) => {
   router.push({ path: '/', query: { categoryId } });
 };
-
 </script>
 
 <style scoped>

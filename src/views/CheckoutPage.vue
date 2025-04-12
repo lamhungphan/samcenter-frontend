@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import HeaderComponent from "@/components/Header.vue";
 import CartItem from "@/components/CheckoutCart.vue";
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";

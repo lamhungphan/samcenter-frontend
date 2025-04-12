@@ -11,11 +11,11 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useProductStore } from '@/store/productStore';
-import Carousel from '@/components/CarouselComponent.vue';
+import Carousel from '@/components/Carousel.vue';
 import ProductCategory from '@/components/CategoryList.vue';
 import ProductList from '@/components/ProductList.vue';
-import HeaderComponent from '@/components/HeaderComponent.vue'
-import FooterComponent from '@/components/FooterComponent.vue'
+import HeaderComponent from '@/components/Header.vue'
+import FooterComponent from '@/components/Footer.vue'
 
 const productStore = useProductStore();
 const products = computed(() => productStore.products);

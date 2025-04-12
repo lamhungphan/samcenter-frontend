@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import HeaderComponent from "@/components/Header.vue";
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useProductStore } from "@/store/productStore";

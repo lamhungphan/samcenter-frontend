@@ -4,7 +4,7 @@
     <section class="cart-page py-5">
       <div class="container">
         <div v-if="cart.length === 0" class="text-center empty-cart">
-          <p>Giỏ hàng của bạn đang trống.</p>
+          <p>Giỏ hàng của bạn đang trống</p>
           <RouterLink to="/" class="btn btn-primary">Tiếp tục mua sắm</RouterLink>
         </div>
 
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
+import HeaderComponent from "@/components/Header.vue";
 import { computed, onMounted } from "vue";
 import { useCartStore } from "@/store/cartStore";
 import { useLoginStore } from "@/store/loginStore";

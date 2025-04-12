@@ -74,28 +74,22 @@
               <!-- Khi chưa đăng nhập -->
               <template v-if="!loginStore.isAuthenticated">
                 <li>
-                  <a
-                    class="dropdown-item"
-                    href="/login"
-                  >
+                  <button class="dropdown-item" @click="showLoginModal = true">
                     Đăng nhập
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
+                  <button
                     class="dropdown-item"
-                    href="/register"
+                    @click="showRegisterModal = true"
                   >
                     Đăng ký
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    class="dropdown-item"
-                    href="#"
-                  >
+                  <button class="dropdown-item" @click="showForgotModal = true">
                     Quên mật khẩu
-                  </a>
+                  </button>
                 </li>
               </template>
 
@@ -111,18 +105,16 @@
                   </a>
                 </li>
                 <li>
-                  <a
+                  <button
                     class="dropdown-item"
-                    href="/change-password"
+                    @click="showChangePassword = true"
                   >
                     Đổi mật khẩu
-                  </a>
+                  </button>
                 </li>
+
                 <li>
-                  <a
-                    class="dropdown-item"
-                    href="/edit-profile"
-                  >
+                  <a class="dropdown-item" href="/edit-profile">
                     Sửa thông tin
                   </a>
                 </li>
@@ -156,25 +148,40 @@
       </div>
     </div>
   </nav>
+
+  <LoginModal v-if="showLoginModal" @close="showLoginModal = false" />
+  <RegisterModal v-if="showRegisterModal" @close="showRegisterModal = false" />
+  <ForgetPasswordModal v-if="showForgotModal" @close="showForgotModal = false" />
+  <ChangePasswordModal v-if="showChangePassword" @close="showChangePassword = false" />
+
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useCartStore } from "@/store/cartStore";
 import { useLoginStore } from "@/store/loginStore";
+import { useCartStore } from "@/store/cartStore";
 import { useProductStore } from "@/store/productStore";
+import LoginModal from "@/components/LoginModal.vue";
+import RegisterModal from "@/components/RegisterModal.vue";
+import ForgetPasswordModal from "@/components/ForgotPasswordModal.vue";
+import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
+
+const showLoginModal = ref(false);
+const showRegisterModal = ref(false);
+const showForgotModal = ref(false);
+const showChangePassword = ref(false);
 
 const router = useRouter();
 const cartStore = useCartStore();
 const loginStore = useLoginStore();
 const productStore = useProductStore();
+
 const searchKeyword = ref("");
 
+const userId = computed(() => loginStore.user?.id || null);
 const cart = computed(() => cartStore.cart);
 const cartQuantity = computed(() => cart.value.length);
-
-const userId = computed(() => loginStore.user?.id || null);
 
 onMounted(async () => {
   await cartStore.initializeCart(userId.value);
@@ -202,10 +209,8 @@ function toggleLanguage() {
 
   if (checkbox.checked) {
     label.textContent = "VI";
-    // Thêm xử lý chuyển sang tiếng Việt tại đây
   } else {
     label.textContent = "EN";
-    // Thêm xử lý chuyển sang tiếng Anh tại đây
   }
 }
 </script>
