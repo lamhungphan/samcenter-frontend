@@ -98,13 +98,13 @@ import { useRouter } from "vue-router";
 import { useCartStore } from "@/store/cartStore";
 import { useProductStore } from "@/store/productStore";
 import { useOrderStore } from "@/store/orderStore";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import { toast } from 'vue3-toastify';
 
 const cartStore = useCartStore();
 const productStore = useProductStore();
 const orderStore = useOrderStore();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 const router = useRouter();
 const isSubmitting = ref(false);
 

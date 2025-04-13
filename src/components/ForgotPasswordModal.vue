@@ -1,10 +1,10 @@
 <template>
   <div class="modal-backdrop" @click.self="close">
-    <div class="modal-content">
+    <div class="modal-content p-4 rounded shadow bg-white" style="width: 400px">
       <h2 class="text-center mb-4 fw-bold">Quên Mật Khẩu</h2>
       <form @submit.prevent="changePassword">
         <div class="mb-3">
-          <label for="email" class="form-label"></label>
+          <label for="email" class="form-label">Email</label>
           <input
             type="email"
             id="email"
@@ -14,7 +14,11 @@
             placeholder="Nhập địa chỉ email của bạn"
           />
         </div>
-        <button type="submit" class="btn btn-primary w-100">Gửi</button>
+        <button type="submit" class="btn btn-primary w-100" :disabled="loading">
+          {{ loading ? "Đang gửi..." : "Gửi" }}
+        </button>
+        <p v-if="error" class="text-danger mt-2">{{ error }}</p>
+        <p v-if="success" class="text-success mt-2">Đã gửi email khôi phục thành công!</p>
       </form>
     </div>
   </div>
@@ -22,14 +26,34 @@
 
 <script setup>
 import { ref } from "vue";
-const emit = defineEmits(["close"]);
-const email = ref("");
+import { useUserStore } from "@/store/userStore";
 
+const email = ref("");
+const loading = ref(false);
+const error = ref(null);
+const success = ref(false);
+
+const userStore = useUserStore();
+
+const emit = defineEmits(["close"]);
 const close = () => emit("close");
 
-const changePassword = () => {
-  console.log("Gửi yêu cầu reset mật khẩu:", email.value);
-  emit("close");
+const changePassword = async () => {
+  error.value = null;
+  success.value = false;
+  loading.value = true;
+
+  const ok = await userStore.forgotPassword(email.value.trim());
+  loading.value = false;
+
+  if (ok) {
+    success.value = true;
+    setTimeout(() => {
+      emit("close");
+    }, 1500);
+  } else {
+    error.value = userStore.error;
+  }
 };
 </script>
 

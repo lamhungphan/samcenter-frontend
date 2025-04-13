@@ -159,7 +159,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import { useCartStore } from "@/store/cartStore";
 import { useProductStore } from "@/store/productStore";
 import LoginModal from "@/components/LoginModal.vue";
@@ -174,7 +174,7 @@ const showChangePassword = ref(false);
 
 const router = useRouter();
 const cartStore = useCartStore();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 const productStore = useProductStore();
 
 const searchKeyword = ref("");

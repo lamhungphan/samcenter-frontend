@@ -46,12 +46,12 @@
 <script setup>
 import { ref } from "vue";
 import { useOrderStore } from "@/store/orderStore";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 const orderStore = useOrderStore();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 

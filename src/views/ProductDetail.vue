@@ -42,13 +42,13 @@ import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useProductStore } from "@/store/productStore";
 import { useCartStore } from "@/store/cartStore";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import { toast } from "vue3-toastify";
 
 const route = useRoute();
 const productStore = useProductStore();
 const cartStore = useCartStore();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 
 const product = computed(() => productStore.productDetail || {});
 

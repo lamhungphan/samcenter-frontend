@@ -58,13 +58,13 @@
   
   <script setup>
   import { ref } from "vue";
-  import { useLoginStore } from "@/store/loginStore";
+  import { useUserStore } from "@/store/userStore";
   import { useRouter } from "vue-router";
   import Swal from "sweetalert2";
   
   const emit = defineEmits(["close"]);
   
-  const store = useLoginStore();
+  const store = useUserStore();
   const router = useRouter();
   const username = ref("");
   const password = ref("");

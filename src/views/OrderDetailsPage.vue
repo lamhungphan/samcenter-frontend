@@ -52,10 +52,10 @@ import { computed, watch } from "vue";
 import { onMounted } from "vue";
 import { useOrderStore } from "@/store/orderStore";
 import { useRoute, useRouter } from "vue-router";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 
 const orderStore = useOrderStore();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 const route = useRoute();
 const orderId = route.params.id;
 const order = computed(() => orderStore.currentOrder);

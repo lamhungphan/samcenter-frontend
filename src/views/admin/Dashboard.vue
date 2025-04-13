@@ -20,7 +20,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import Chart from "@/components/admin/chart/Chart.vue";
 import axios from "@/axios/axios";
 

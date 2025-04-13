@@ -3,7 +3,8 @@ import axiosInstance from "@/axios/axios";
 import { decodeJWT } from "@/utils/jwt";
 import { useCartStore } from "@/store/cartStore";
 
-export const useLoginStore = defineStore("login", {
+export const useUserStore = defineStore("login", {
+
   state: () => ({
     user: JSON.parse(localStorage.getItem("user")) || null,
     token: localStorage.getItem("token") || null,
@@ -11,26 +12,29 @@ export const useLoginStore = defineStore("login", {
     error: null,
     loading: false,
   }),
+
   getters: {
+
     isAuthenticated: (state) => !!state.token,
     userId: (state) => state.user?.id || null,
     role: (state) => {
       if (!state.token) return null;
       try {
-        const decoded = decodeJWT(state.token);    
+        const decoded = decodeJWT(state.token);
         let rawRole = decoded?.role;
 
         if (Array.isArray(rawRole)) {
           rawRole = rawRole.length > 0 ? rawRole[0] : null;
         }
         if (typeof rawRole === "string") {
-          rawRole = rawRole.replace(/[\[\]']/g, "").trim(); 
+          rawRole = rawRole.replace(/[\[\]']/g, "").trim();
         }
         return rawRole ? rawRole.toLowerCase() : null;
       } catch (error) {
         return null;
       }
     },
+
     canViewManagerDashboard: (state) => {
       const canView = ["director", "staff"].includes(state.role);
       return canView;
@@ -38,7 +42,9 @@ export const useLoginStore = defineStore("login", {
     isDirector: (state) => state.role === "director",
     isStaff: (state) => state.role === "staff",
   },
+
   actions: {
+
     async login(username, password) {
       this.loading = true;
       this.error = null;
@@ -51,7 +57,7 @@ export const useLoginStore = defineStore("login", {
         if (response.data.accessToken) {
           this.token = response.data.accessToken;
           this.refreshToken = response.data.refreshToken;
-          
+
           // Lưu user từ response (chứa ID)
           this.user = {
             username,
@@ -78,6 +84,41 @@ export const useLoginStore = defineStore("login", {
       } catch (error) {
         console.error("Login error:", error);
         this.error = error.response?.data?.message || "Lỗi kết nối đến máy chủ!";
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async forgotPassword(email) {
+      this.loading = true;
+      this.error = null;
+      try {
+        await axiosInstance.post("/account/forgot-password", null, {
+          params: {
+            email: email,
+          },
+        });        
+        return true;
+      } catch (error) {
+        this.error = error.response?.data?.message || "Lỗi gửi email đặt lại mật khẩu";
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async resetPassword({ token, newPassword }) {
+      this.loading = true;
+      this.error = null;
+      try {
+        await axiosInstance.post("/account/reset-password", {
+          token,
+          newPassword,
+        });
+        return true;
+      } catch (error) {
+        this.error = error.response?.data?.message || "Lỗi đặt lại mật khẩu";
         return false;
       } finally {
         this.loading = false;

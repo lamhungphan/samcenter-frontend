@@ -60,7 +60,7 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import { useLoginStore } from "@/store/loginStore";
+import { useUserStore } from "@/store/userStore";
 import Dashboard from "@/views/admin/Dashboard.vue";
 import Order from "@/views/admin/Order.vue";
 import UserManagement from "@/views/admin/UserManagement.vue";
@@ -69,7 +69,7 @@ import CategoryManagement from "@/views/admin/CategoryManagement.vue";
 import { onMounted } from "vue";
 
 const router = useRouter();
-const loginStore = useLoginStore();
+const loginStore = useUserStore();
 
 onMounted(() => {
   if (!loginStore.isAuthenticated || !loginStore.canViewManagerDashboard) {

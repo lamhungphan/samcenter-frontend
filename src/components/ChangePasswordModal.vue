@@ -3,19 +3,22 @@
     class="modal fade show d-block"
     tabindex="-1"
     role="dialog"
-    style="background: rgba(0,0,0,0.5);"
+    style="background: rgba(0, 0, 0, 0.5)"
   >
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content p-4">
         <div class="modal-header">
           <h5 class="modal-title fw-bold">Đổi Mật Khẩu</h5>
-          <button type="button" class="btn-close" @click="$emit('close')"></button>
+          <button
+            type="button"
+            class="btn-close"
+            @click="$emit('close')"
+          ></button>
         </div>
 
         <div class="modal-body">
           <form @submit.prevent="changePassword">
-
-            <div class="mb-3">
+            <div class="mb-3" v-if="mode === 'authenticated'">
               <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
               <input
                 type="password"
@@ -38,7 +41,9 @@
             </div>
 
             <div class="mb-3">
-              <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+              <label for="confirmPassword" class="form-label"
+                >Xác nhận mật khẩu mới</label
+              >
               <input
                 type="password"
                 id="confirmPassword"
@@ -51,7 +56,6 @@
             <button type="submit" class="btn btn-primary w-100">
               Đổi Mật Khẩu
             </button>
-            
           </form>
         </div>
       </div>
@@ -62,9 +66,22 @@
 <script setup>
 import { ref } from "vue";
 import { useUsers } from "@/store/admin/UserStore";
+import { useUserStore } from "@/store/userStore";
 import { toast } from "vue3-toastify";
 
+const props = defineProps({
+  mode: {
+    type: String,
+    default: "authenticated",
+  },
+  token: {
+    type: String,
+    default: "",
+  },
+});
+
 const usersStore = useUsers();
+const userStore = useUserStore();
 
 const oldPassword = ref("");
 const newPassword = ref("");
@@ -79,10 +96,19 @@ const changePassword = async () => {
     return;
   }
 
-  const { success, message } = await usersStore.changePassword(
-    oldPassword.value,
-    newPassword.value
-  );
+  let success, message;
+
+  if (props.mode === "authenticated") {
+    ({ success, message } = await usersStore.changePassword(
+      oldPassword.value,
+      newPassword.value
+    ));
+  } else if (props.mode === "reset") {
+    ({ success, message } = await userStore.resetPassword({
+      token: props.token,
+      newPassword: newPassword.value,
+    }));
+  }
 
   if (success) {
     toast.success(message);
