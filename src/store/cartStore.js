@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
 import axiosInstance from '@/axios/axios';
+import { useUserStore } from '@/store/userStore';
 
 export const useCartStore = defineStore('cart', () => {
   const cart = ref([]);
+  const userStore = useUserStore();
+  const userId = computed(() => userStore.userId);
 
   const getLocalCart = () => {
     const localCart = localStorage.getItem('localCart');
@@ -15,9 +17,10 @@ export const useCartStore = defineStore('cart', () => {
     localStorage.setItem('localCart', JSON.stringify(cartItems));
   };
 
-  const fetchCart = async (userId) => {
+  const fetchCart = async () => {
     try {
-      const response = await axiosInstance.get(`/cart/${userId}`);
+      if (!userId.value) return;
+      const response = await axiosInstance.get(`/cart/${userId.value}`);
       cart.value = Array.isArray(response.data.data) ? response.data.data : [];
     } catch (error) {
       console.error('Lỗi khi lấy giỏ hàng:', error);
@@ -33,10 +36,10 @@ export const useCartStore = defineStore('cart', () => {
         if (existingItem) {
           existingItem.quantity += quantityChange;
           if (existingItem.quantity <= 0) {
-            localCart = localCart.filter(item => item.productId !== productId); 
+            localCart = localCart.filter(item => item.productId !== productId);
           }
         } else if (quantityChange > 0) {
-          localCart.push({ productId, quantity: quantityChange }); 
+          localCart.push({ productId, quantity: quantityChange });
         }
         saveLocalCart(localCart);
         cart.value = localCart;
@@ -45,7 +48,7 @@ export const useCartStore = defineStore('cart', () => {
         const existingItem = cart.value.find(item => item.productId === productId);
         const newQuantity = existingItem ? existingItem.quantity + quantityChange : quantityChange;
         const cartItem = {
-          userId,
+          userId: userId.value,
           productId,
           quantity: newQuantity > 0 ? newQuantity : 0,
         };
@@ -122,5 +125,13 @@ export const useCartStore = defineStore('cart', () => {
     return cart.value.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
   });
 
-  return { cart, fetchCart, addToCart, removeFromCart, syncLocalCartToServer, initializeCart, cartTotal };
+  return {
+    cart,
+    cartTotal,
+    fetchCart,
+    addToCart,
+    removeFromCart,
+    syncLocalCartToServer,
+    initializeCart,
+  };
 });

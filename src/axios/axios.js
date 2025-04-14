@@ -21,7 +21,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.log("Unauthorized! Redirecting to login...");
+      console.log("Unauthorized!");
     }
     return Promise.reject(error);
   }

@@ -33,12 +33,19 @@
         <p class="text-center">Đang tải sản phẩm...</p>
       </div>
     </div>
+
+    <ProductList
+      v-if="product.categoryId"
+      :category-id="product.categoryId"
+      :hide-pagination="true"
+    />
   </div>
 </template>
 
 <script setup>
 import HeaderComponent from "@/components/Header.vue";
-import { computed, onMounted } from "vue";
+import ProductList from "@/components/ProductList.vue";
+import { onMounted, computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useProductStore } from "@/store/productStore";
 import { useCartStore } from "@/store/cartStore";
@@ -84,6 +91,14 @@ const addToCart = async (productId) => {
     });
   }
 };
+
+watch(
+  () => route.params.id,
+  async (newId) => {
+    await productStore.fetchProductById(newId);
+    console.log("Product mới:", product.value);
+  }
+);
 </script>
 
 <style scoped>

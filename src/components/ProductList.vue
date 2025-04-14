@@ -23,7 +23,10 @@
     </div>
 
     <!-- PHÂN TRANG -->
-    <div class="d-flex justify-content-center mt-4" v-if="totalPages > 1">
+    <div
+      class="d-flex justify-content-center mt-4"
+      v-if="!props.hidePagination && totalPages > 1"
+    >
       <button
         class="btn btn-outline-primary me-2"
         :disabled="currentPage === 1"
@@ -32,7 +35,9 @@
         Trang trước
       </button>
 
-      <span class="align-self-center">Trang {{ currentPage }} / {{ totalPages }}</span>
+      <span class="align-self-center"
+        >Trang {{ currentPage }} / {{ totalPages }}</span
+      >
 
       <button
         class="btn btn-outline-primary ms-2"
@@ -49,11 +54,22 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useProductStore } from "@/store/productStore";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+
+const props = defineProps({
+  categoryId: {
+    type: Number,
+    required: false,
+  },
+  hidePagination: {
+    type: Boolean,
+    default: false,
+  },
+});
+const categoryProducts = ref([]);
 
 const productStore = useProductStore();
 const router = useRouter();
-const route = useRoute();
 
 const products = computed(() => productStore.products);
 const itemsPerPage = 8;
@@ -74,24 +90,22 @@ const goToProduct = (id) => {
   router.push(`/product/${id}`);
 };
 
-const loadProducts = () => {
-  const categoryId = route.query.categoryId;
+const loadProducts = async () => {
   currentPage.value = 1;
-  if (categoryId) {
-    productStore.fetchProductsByCategory(Number(categoryId));
+  if (props.categoryId) {
+    const response = await productStore.fetchProductsByCategory(props.categoryId);
+    categoryProducts.value = response;
   } else {
-    productStore.fetchProducts();
+    const response = await productStore.fetchProducts();
+    categoryProducts.value = response;
   }
 };
 
-onMounted(loadProducts);
-
-watch(
-  () => route.query.categoryId,
-  () => {
-    loadProducts();
+watch(() => props.categoryId, async (newCategoryId, oldCategoryId) => {
+  if (newCategoryId !== oldCategoryId) {
+    await loadProducts();
   }
-);
+});
 
 </script>
 

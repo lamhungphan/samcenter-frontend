@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axiosInstance from '@/axios/axios';
 
 const getOrdersByUserId = (userId) => axiosInstance.get(`/order/user/${userId}`);
 
@@ -9,25 +9,27 @@ export const useOrderStore = defineStore('order', {
         currentOrder: null,
         orderDetailsList: [],
         isLoading: false,
+        error: null,
     }),
 
     actions: {
-        async fetchOrders({ keyword = '', sort = '', page = 1, size = 5 } = {}) {
+        async fetchOrders({ userId = null, keyword = '', sort = '', page = 1, size = 5 } = {}) {
             this.isLoading = true;
+            this.error = null;
             try {
-                const response = await axiosInstance.get('/order', {
+                const response = await axiosInstance.get(userId ? `/order/user/${userId}` : `/order`, {
                     params: { keyword, sort, page, size },
                 });
-                const pageData = response.data.data;
-                this.orders = pageData.content;
-                return pageData;
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-                throw error;
+                const data = response.data.data;
+                this.orders = data.content || data;
+                return data;
+            } catch (err) {
+                this.error = err;
+                throw err;
             } finally {
                 this.isLoading = false;
             }
-        },
+        },        
 
         async fetchOrderById(orderId) {
             if (!orderId) {

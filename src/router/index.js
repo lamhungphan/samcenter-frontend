@@ -10,6 +10,7 @@ import OrderDetailsPage from '@/views/OrderDetailsPage.vue';
 import EditProfile from '@/views/EditProfile.vue';
 import ResetPasswordPage from '@/views/ResetPasswordPage.vue';
 import AdminHome from '@/views/admin/AdminHome.vue';
+import Oauth2Redirect from '@/components/Oauth2Redirect.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +23,10 @@ const router = createRouter({
     { path: '/order-detail/:id', component: OrderDetailsPage },
     { path: '/edit-profile', component: EditProfile },
     { path: '/admin', component: AdminHome, meta: { requiresAuth: true, requiresAdmin: true } },
-    { path: "/reset-password", component: ResetPasswordPage},
+    { path: "/reset-password", component: ResetPasswordPage },
+
+    { path: '/oauth2-redirect', name: 'Oauth2Redirect', component: Oauth2Redirect, },
+
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })

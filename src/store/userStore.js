@@ -4,50 +4,57 @@ import { decodeJWT } from "@/utils/jwt";
 import { useCartStore } from "@/store/cartStore";
 
 export const useUserStore = defineStore("login", {
-
   state: () => ({
-    user: JSON.parse(localStorage.getItem("user")) || null,
-    token: localStorage.getItem("token") || null,
-    refreshToken: localStorage.getItem("refreshToken") || null,
+    token: sessionStorage.getItem("token") || null,
+    refreshToken: sessionStorage.getItem("refreshToken") || null,
     error: null,
     loading: false,
   }),
 
   getters: {
-
     isAuthenticated: (state) => !!state.token,
-    userId: (state) => state.user?.id || null,
-    role: (state) => {
+
+    decodedToken: (state) => {
       if (!state.token) return null;
       try {
-        const decoded = decodeJWT(state.token);
-        let rawRole = decoded?.role;
-
-        if (Array.isArray(rawRole)) {
-          rawRole = rawRole.length > 0 ? rawRole[0] : null;
-        }
-        if (typeof rawRole === "string") {
-          rawRole = rawRole.replace(/[\[\]']/g, "").trim();
-        }
-        return rawRole ? rawRole.toLowerCase() : null;
-      } catch (error) {
+        return decodeJWT(state.token);
+      } catch (e) {
         return null;
       }
     },
 
-    canViewManagerDashboard: (state) => {
-      const canView = ["director", "staff"].includes(state.role);
-      return canView;
+    userId: (state) => {
+      const decoded = decodeJWT(state.token);
+      console.log("Decoded token:", decoded);
+      return decoded?.id || decoded?.sub || null;
+    },    
+
+    username: (state) => {
+      return state.decodedToken?.username || null;
     },
+
+    role: (state) => {
+      let rawRole = state.decodedToken?.role;
+
+      if (Array.isArray(rawRole)) rawRole = rawRole[0];
+      if (typeof rawRole === "string") rawRole = rawRole.replace(/[\[\]']/g, "").trim();
+
+      return rawRole?.toLowerCase() || null;
+    },
+
+    canViewManagerDashboard: (state) => {
+      return ["director", "staff"].includes(state.role);
+    },
+
     isDirector: (state) => state.role === "director",
     isStaff: (state) => state.role === "staff",
   },
 
   actions: {
-
     async login(username, password) {
       this.loading = true;
       this.error = null;
+
       try {
         const response = await axiosInstance.post("/auth/access-token", {
           username,
@@ -58,21 +65,12 @@ export const useUserStore = defineStore("login", {
           this.token = response.data.accessToken;
           this.refreshToken = response.data.refreshToken;
 
-          // Lưu user từ response (chứa ID)
-          this.user = {
-            username,
-            ...(response.data.account || {}),
-          };
+          sessionStorage.setItem("token", this.token);
+          sessionStorage.setItem("refreshToken", this.refreshToken);
 
-          localStorage.setItem("token", this.token);
-          localStorage.setItem("refreshToken", this.refreshToken);
-          localStorage.setItem("user", JSON.stringify(this.user));
-
-          // Lấy userId từ response
-          const userId = this.user.id;
+          const userId = decodeJWT(this.token)?.id;
           const cartStore = useCartStore();
 
-          // Đồng bộ giỏ hàng và khởi tạo
           await cartStore.syncLocalCartToServer(userId);
           await cartStore.initializeCart(userId);
 
@@ -95,10 +93,8 @@ export const useUserStore = defineStore("login", {
       this.error = null;
       try {
         await axiosInstance.post("/account/forgot-password", null, {
-          params: {
-            email: email,
-          },
-        });        
+          params: { email },
+        });
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || "Lỗi gửi email đặt lại mật khẩu";
@@ -126,14 +122,14 @@ export const useUserStore = defineStore("login", {
     },
 
     logout() {
-      this.user = null;
       this.token = null;
       this.refreshToken = null;
       this.error = null;
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("localCart");
+
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("refreshToken");
+      localStorage.removeItem("localCart"); // Nếu bạn vẫn dùng localCart
     },
   },
 });
+
