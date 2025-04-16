@@ -23,7 +23,7 @@
           />
         </div>
         <button
-          type="submit"
+          type="submit" id="login"
           class="btn btn-warning w-100"
           :disabled="store.loading"
         >

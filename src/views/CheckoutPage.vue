@@ -183,7 +183,7 @@ const submitOrder = async () => {
       autoClose: 3000,
     });
 
-    cartStore.cart = [];
+    await cartStore.clearCart();
     router.push(`/order-detail/${newOrder.id}`);
   } catch (error) {
     console.error("Error submitting order:", error);

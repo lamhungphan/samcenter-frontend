@@ -87,7 +87,7 @@ const enrichedCart = computed(() => {
 });
 
 onMounted(async () => {
-  cartStore.initializeCart(userId.value);
+  cartStore.initializeCart();
   await productStore.fetchProducts();
 });
 

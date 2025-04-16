@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axiosInstance from '@/axios/axios';
+import { useUserStore } from '@/store/userStore';
 
 const getOrdersByUserId = (userId) => axiosInstance.get(`/order/user/${userId}`);
 

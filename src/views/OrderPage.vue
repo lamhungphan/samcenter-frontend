@@ -44,23 +44,41 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useOrderStore } from "@/store/orderStore";
 import { useUserStore } from "@/store/userStore";
-import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 const orderStore = useOrderStore();
-const loginStore = useUserStore();
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
 const orders = orderStore.orders;
 
 onMounted(async () => {
-  const userId = route.params.id;
+  const userId = userStore.userId;
+  if (!userId) {
+    console.warn("Chưa có userId, cần đăng nhập trước");
+    router.push("/login");
+    return;
+  }
+
   await orderStore.fetchOrdersByUser(userId);
 });
+
+// watch(
+//   () => userStore.userId,
+//   async (userId) => {
+//     if (userId) {
+//       await orderStore.fetchOrdersByUser(userId);
+//     } else {
+//       console.warn("userId chưa có. Redirect hoặc xử lý tùy logic");
+//       router.push("/login");
+//     }
+//   },
+//   { immediate: true } // chạy ngay lần đầu tiên
+// );
 
 const viewOrderDetails = (orderId) => {
   router.push(`/order-detail/${orderId}`);
